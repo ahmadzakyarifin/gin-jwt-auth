@@ -5,58 +5,49 @@ import (
 
 	"github.com/ahmadzakyarifin/gin-jwt-auth/internal/dto"
 	"github.com/ahmadzakyarifin/gin-jwt-auth/internal/service"
+	"github.com/ahmadzakyarifin/gin-jwt-auth/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	service service.AuthService
+    service service.AuthService
 }
 
 func NewUserHandler(s service.AuthService) *UserHandler {
-	return &UserHandler{service: s}
+    return &UserHandler{service: s}
 }
 
-func (h *UserHandler) Register(ctx *gin.Context){
-	var req dto.RegisterRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+func (h *UserHandler) Register(ctx *gin.Context) {
+    var req dto.RegisterRequest
 
-	if err := h.service.Register(&req); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+		errors := utils.FormatValidationEror(err)
+        utils.APIErrorResponse(ctx, "Input tidak valid", http.StatusBadRequest, "error", errors)
+        return
+    }
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Register Success",
-	})
+    if err := h.service.Register(&req); err != nil {
+        utils.APIErrorResponse(ctx, "Register Gagal", http.StatusBadRequest, "error", nil)
+        return
+    }
+
+    utils.APIResponse(ctx, "Register Berhasil", http.StatusCreated, "success", nil)
 }
 
-func (h *UserHandler) Login(ctx *gin.Context){
-	var req dto.LoginRequest
-	err := ctx.ShouldBindJSON(&req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest,gin.H{
-			"error" : err.Error(),
-		})
-		return
-	}
-	
+func (h *UserHandler) Login(ctx *gin.Context) {
+    var req dto.LoginRequest
 
+    err := ctx.ShouldBindJSON(&req)
+    if err != nil {
+		errors := utils.FormatValidationEror(err)
+        utils.APIErrorResponse(ctx, "Input tidak valid", http.StatusBadRequest, "error", errors)
+        return
+    }
 
-	_,err = h.service.Login(&req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError,gin.H{
-			"error" : err.Error(),
-		})
-		return
-	}
-	ctx.JSON(http.StatusOK,gin.H{
-		"message" : "Selamat datang di APK ini",
-	})
+    token, err := h.service.Login(&req)
+    if err != nil {
+        utils.APIErrorResponse(ctx, "Login Gagal", http.StatusUnauthorized, "error", nil)
+        return
+    }
+    utils.APIResponse(ctx, "Login Berhasil", http.StatusOK, "success", gin.H{"token": token})
 }
