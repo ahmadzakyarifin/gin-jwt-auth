@@ -1,0 +1,28 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# INI KUNCINYA: Kita suruh dia build file yang ada di folder cmd
+cmd = "go build -o ./tmp/main ./cmd/main.go"
+
+# Lokasi hasil build (binary)
+bin = "./tmp/main"
+
+# File yang harus diawasi biar auto-reload kalau di-save
+include_ext = ["go", "tpl", "tmpl", "html", "env"]
+exclude_dir = ["assets", "tmp", "vendor"]
+
+# Delay biar gak spam rebuild kalau lagi ngetik cepet
+delay = 1000
+
+[log]
+time = true
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+clean_on_exit = true
