@@ -7,6 +7,10 @@ import (
 	"github.com/ahmadzakyarifin/gin-jwt-auth/internal/entity"
 )
 
+// ========================================
+//go:generate mockery --name=AuthRepository --output=mocks --outpkg=mocks
+// =======================================
+
 type AuthRepository interface {
 	Create(user *entity.User) error
 	FindByEmail(email string) (*entity.User, error)
