@@ -49,5 +49,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
         utils.APIErrorResponse(ctx, "Login Gagal", http.StatusUnauthorized, "error", nil)
         return
     }
+    ctx.SetCookie("token",token,3600,"/","localhost",false,true)
+
     utils.APIResponse(ctx, "Login Berhasil", http.StatusOK, "success", gin.H{"token": token})
 }
