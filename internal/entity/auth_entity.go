@@ -14,5 +14,5 @@ type User struct {
 	Password  string    `json:"-"`
 	Role      string    `json:"role"`
 	CreatedAt *time.Time `json:"created_at"`
-	UpdateAt  *time.Time `json:"update_at"`
+	UpdateAt  *time.Time `json:"updated_at"`
 }
